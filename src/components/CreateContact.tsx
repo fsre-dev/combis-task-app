@@ -7,12 +7,26 @@ import { createContact } from "../service/BackendServices";
 
 const CreateContactRoot = styled.div`
   display: flex;
+  justify-content: center;
   width: 100%;
   height: 100%;
 `
 const CustomForm = styled(Form)`
-  width: 100%;
+  display: flex;
+  flex-flow: column;
+  justify-content: space-evenly;
 `
+
+const CustomButton = styled(Button)`
+  width: 100px;
+`
+
+const Message = styled.div`
+  color: red;
+  margin-top: 25px;
+`
+
+const mobileRegex = new RegExp("^([0|\+[0-9]{1,5})?([7-9][0-9]{9})$") //eslint-disable-line
 
 interface Contact {
   firstName: string,
@@ -51,12 +65,12 @@ const CreateContact: React.FunctionComponent = (props) => {
     };
     
     createContact(contact).then(data => {
-      resetForm()
 
       if(data.status >= 400) {
         setMessage(data.content.message) 
       } else if (data.status >= 200 && data.status <= 300) {
         setMessage("Contact succesfully created")
+        resetForm()
       }
         
       setTimeout(() => {
@@ -87,19 +101,22 @@ const CreateContact: React.FunctionComponent = (props) => {
 
   <Form.Group className="mb-3" controlId="formGridMobile">
     <Form.Label>Mobile</Form.Label>
-    <Form.Control  value={mobile} placeholder="Enter mobile " onChange={(e) => setMobile(e.currentTarget.value)}/>
+    <Form.Control value={mobile} placeholder="Enter mobile " onChange={(e) => setMobile(e.currentTarget.value)} isInvalid={mobile.length > 0 && !mobileRegex.test(mobile)}/>
+    <Form.Control.Feedback type="invalid">
+            Please provide a valid mobile number.
+          </Form.Control.Feedback>
   </Form.Group>
 
   <Form.Group className="mb-3" controlId="formGridAddress">
     <Form.Label>Address</Form.Label>
-    <Form.Control  value={address} placeholder="Enter address" onChange={(e) => setAddress(e.currentTarget.value)}/>
+    <Form.Control value={address} placeholder="Enter address" onChange={(e) => setAddress(e.currentTarget.value)}/>
   </Form.Group>
   
 
-  <Button variant="primary" type="submit">
+  <CustomButton variant="primary" type="submit">
     Create
-  </Button>
-  <div>{message}</div>
+  </CustomButton>
+  <Message>{message}</Message>
 </CustomForm>
   </CreateContactRoot>
 }
